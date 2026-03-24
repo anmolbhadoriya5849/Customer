@@ -5,13 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import axios from 'axios';
 import { useAuth } from '@/lib/useAuth';
-import { 
-  Calendar, 
-  MapPin, 
-  Ticket, 
-  Building2, 
-  ChevronRight, 
-  Loader2, 
+import {
+  Calendar,
+  MapPin,
+  Ticket,
+  Building2,
+  ChevronRight,
+  Loader2,
   Sparkles,
   LayoutDashboard,
   LogOut,
@@ -35,9 +35,9 @@ function CustomerPublicContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const distributorId = searchParams.get('d');
-  
+
   const { user, loading: authLoading, logout } = useAuth();
-  
+
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -112,11 +112,11 @@ function CustomerPublicContent() {
     return (
       <div className="min-h-[80vh] flex items-center justify-center p-6">
         <div className="text-center space-y-4 max-w-sm p-8 bg-red-500/5 border border-red-500/10 rounded-3xl backdrop-blur-md">
-            <div className="inline-flex p-3 rounded-full bg-red-500/10 text-red-400 mb-2">
-                <Ticket className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold text-white">Unable to Load Events</h3>
-            <p className="text-red-300/60 text-sm">{error}</p>
+          <div className="inline-flex p-3 rounded-full bg-red-500/10 text-red-400 mb-2">
+            <Ticket className="w-6 h-6" />
+          </div>
+          <h3 className="text-xl font-bold text-white">Unable to Load Events</h3>
+          <p className="text-red-300/60 text-sm">{error}</p>
         </div>
       </div>
     );
@@ -128,16 +128,16 @@ function CustomerPublicContent() {
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16 lg:mb-24">
         <div className="max-w-2xl space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold uppercase tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.15)]">
-              <Sparkles className="w-3.5 h-3.5" /> Official Box Office
+            <Sparkles className="w-3.5 h-3.5" /> Official Box Office
           </div>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.1]">
-              Upcoming <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500">
-                Experiences
-              </span>
+            Upcoming <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500">
+              Experiences
+            </span>
           </h1>
           <p className="text-slate-400 text-base sm:text-lg leading-relaxed max-w-md">
-              Secure your spot at the most exclusive events, hackathons, and shows happening near you.
+            Secure your spot at the most exclusive events, hackathons, and shows happening near you.
           </p>
         </div>
 
@@ -182,72 +182,72 @@ function CustomerPublicContent() {
 
       {/* Events Grid */}
       {events.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 rounded-[2.5rem] bg-white/[0.02] border border-white/5 border-dashed">
-             <Ticket className="w-12 h-12 text-slate-700 mb-4" />
-             <p className="text-slate-400 text-lg font-medium">No upcoming experiences found.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {events.map((ev) => (
-              <div
-                key={ev.id}
-                onClick={() => handleEventClick(ev.id)}
-                className="group flex flex-col bg-white/[0.02] border border-white/5 rounded-3xl overflow-hidden cursor-pointer hover:border-cyan-500/30 hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-500/10"
-              >
-                {/* Poster Area */}
-                <div className="relative aspect-[4/3] sm:aspect-[4/5] w-full bg-[#0A0C10] overflow-hidden shrink-0">
-                   {ev.posterUrl ? (
-                     <Image 
-                       src={ev.posterUrl} 
-                       alt={ev.name} 
-                       fill 
-                       className="object-cover transition-transform duration-700 group-hover:scale-105"
-                     />
-                   ) : (
-                     <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700 gap-3 bg-gradient-to-br from-[#12151c] to-[#0A0C10]">
-                        <Ticket className="w-10 h-10 opacity-50" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">No Poster Available</span>
-                     </div>
-                   )}
-                   
-                   {/* Organizer Badge */}
-                   <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-black/50">
-                      <Building2 className="w-3.5 h-3.5 text-cyan-400" />
-                      <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">
-                        {ev.organizer?.companyName ?? 'Organizer'}
-                      </span>
-                   </div>
-                </div>
+        <div className="flex flex-col items-center justify-center py-32 rounded-[2.5rem] bg-white/[0.02] border border-white/5 border-dashed">
+          <Ticket className="w-12 h-12 text-slate-700 mb-4" />
+          <p className="text-slate-400 text-lg font-medium">No upcoming experiences found.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {events.map((ev) => (
+            <div
+              key={ev.id}
+              onClick={() => handleEventClick(ev.id)}
+              className="group flex flex-col bg-white/[0.02] border border-white/5 rounded-3xl overflow-hidden cursor-pointer hover:border-cyan-500/30 hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-500/10"
+            >
+              {/* Poster Area */}
+              <div className="relative aspect-[4/3] sm:aspect-[4/5] w-full bg-[#0A0C10] overflow-hidden shrink-0">
+                {ev.posterUrl ? (
+                  <Image
+                    src={ev.posterUrl}
+                    alt={ev.name}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700 gap-3 bg-gradient-to-br from-[#12151c] to-[#0A0C10]">
+                    <Ticket className="w-10 h-10 opacity-50" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">No Poster Available</span>
+                  </div>
+                )}
 
-                {/* Card Content Area */}
-                <div className="p-6 sm:p-8 flex flex-col flex-grow z-10 relative">
-                    <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug line-clamp-2 mb-6 group-hover:text-cyan-400 transition-colors">
-                        {ev.name}
-                    </h2>
-
-                    <div className="space-y-4 mb-8 flex-grow">
-                        <div className="flex items-center gap-3 text-sm text-slate-400">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/5 text-cyan-400">
-                                <Calendar className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="font-medium text-slate-300">{new Date(ev.startDate).toDateString()}</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-slate-400">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/5 text-violet-400">
-                                <MapPin className="w-3.5 h-3.5" />
-                            </div>
-                            <span className="truncate font-medium text-slate-300">{ev.location ?? "Venue to be announced"}</span>
-                        </div>
-                    </div>
-
-                    <div className="w-full py-3.5 px-4 rounded-xl bg-white/[0.03] border border-white/5 group-hover:border-cyan-500/30 group-hover:bg-cyan-500/10 text-white text-sm font-bold transition-all flex items-center justify-center gap-2">
-                        Get Tickets <ChevronRight className="w-4 h-4" />
-                    </div>
+                {/* Organizer Badge */}
+                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-black/50">
+                  <Building2 className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">
+                    {ev.organizer?.companyName ?? 'Organizer'}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              {/* Card Content Area */}
+              <div className="p-6 sm:p-8 flex flex-col flex-grow z-10 relative">
+                <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug line-clamp-2 mb-6 group-hover:text-cyan-400 transition-colors">
+                  {ev.name}
+                </h2>
+
+                <div className="space-y-4 mb-8 flex-grow">
+                  <div className="flex items-center gap-3 text-sm text-slate-400">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/5 text-cyan-400">
+                      <Calendar className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="font-medium text-slate-300">{new Date(ev.startDate).toDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-slate-400">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/5 text-violet-400">
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="truncate font-medium text-slate-300">{ev.location ?? "Venue to be announced"}</span>
+                  </div>
+                </div>
+
+                <div className="w-full py-3.5 px-4 rounded-xl bg-white/[0.03] border border-white/5 group-hover:border-cyan-500/30 group-hover:bg-cyan-500/10 text-white text-sm font-bold transition-all flex items-center justify-center gap-2">
+                  Get Tickets <ChevronRight className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

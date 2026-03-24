@@ -27,27 +27,26 @@ export default function SellPage() {
   const [buyer, setBuyer] = useState({ name: "", email: "", phone: "" });
   const distributorId = searchParams.get("d") ?? user?.id ?? "";
 
-  type ApiCategory = {
-    id: string;
-    name: string;
-    price: number;
-    description?: string;
-    maxPerUser?: number;
-  };
-
   useEffect(() => {
     async function fetchCategories() {
       const res = await fetch(`${API_URL}/eventManager/events/${eventId}/categories`);
       const data = await res.json();
+      console.log(data);
 
-      const uiCategories: TicketCategory[] = data.categories.map((c: ApiCategory) => ({
-        id: c.id,
-        name: c.name,
-        price: c.price,
-        description: c.description || "First come, first served",
-        maxPerUser: c.maxPerUser || 10,
-        quantity: 0,
-      }));
+      const uiCategories: TicketCategory[] = data.categories
+        .filter((c: any) => c.visibility !== "HIDDEN")
+        .map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          price: c.price,
+          description: c.description || "First come, first served",
+          maxPerUser: c.maxPerUser || 10,
+          quantity: 0,
+          status: c.status,
+          visibility: c.visibility,
+          saleStart: c.saleStart,
+          saleEnd: c.saleEnd,
+        }));
 
       setSelectedTickets(uiCategories);
     }
@@ -114,7 +113,7 @@ export default function SellPage() {
               <div
                 key={s}
                 className={`h-1.5 rounded-full transition-all duration-500 ${s === step ? "w-10 bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.5)]" :
-                    s < step ? "w-6 bg-cyan-600/50" : "w-2 bg-slate-800"
+                  s < step ? "w-6 bg-cyan-600/50" : "w-2 bg-slate-800"
                   }`}
               />
             ))}

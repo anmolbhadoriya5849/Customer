@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { u } from "framer-motion/client";
+
 
 type AuthUser = {
   id: string;
@@ -16,7 +16,7 @@ export function useAuth() {
     async function fetchMe() {
       try {
         const res = await axios.get(
-          `http://localhost:5173/api/v1/auth/customer`,
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/customer`,
           { withCredentials: true }
         );
 
