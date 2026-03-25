@@ -78,7 +78,7 @@ function CustomerPublicContent() {
       return;
     }
 
-    router.push('/events/f5f95b2e-e208-4ee5-afa3-dd36332fe648')
+    router.push('/dashboard')
   }
 
   useEffect(() => {
