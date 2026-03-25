@@ -20,6 +20,7 @@ export function useAuth() {
           { withCredentials: true }
         );
 
+        // dekhte hai
         console.log(res.data);
 
         setUser(res.data);
