@@ -14,6 +14,8 @@ interface Order {
   signedUrl: string;
 }
 
+// thats how we do things
+
 export default function InvoicesPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,8 +52,8 @@ export default function InvoicesPage() {
         ) : (
           <div className="grid gap-4">
             {orders.map((order) => (
-              <div 
-                key={order.id} 
+              <div
+                key={order.id}
                 className="group flex flex-col md:flex-row md:items-center justify-between p-6 bg-[#0f172a] border border-slate-800 hover:border-blue-500/50 transition-all rounded-xl gap-4"
               >
                 <div className="flex items-start gap-4">
