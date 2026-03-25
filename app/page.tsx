@@ -70,6 +70,17 @@ function CustomerPublicContent() {
     router.push(destination);
   }
 
+  function handleDashboard() {
+    if (authLoading) return;
+
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+
+    router.push('/events/f5f95b2e-e208-4ee5-afa3-dd36332fe648')
+  }
+
   useEffect(() => {
     async function fetchEvents() {
       try {
@@ -141,12 +152,12 @@ function CustomerPublicContent() {
           <div className="flex w-full sm:w-auto gap-2 p-2 sm:p-0">
             {user ? (
               <>
-                <Link
-                  href="/dashboard"
+                <button
                   className="flex-1 sm:flex-none inline-flex justify-center items-center gap-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/5 py-2.5 px-5 text-sm font-semibold text-white transition-all shadow-sm"
+                  onClick={handleDashboard}
                 >
-                  <LayoutDashboard className="w-4 h-4 text-cyan-400" /> Dashboard
-                </Link>
+                  Dashboard
+                </button>
                 <button
                   onClick={() => void handleLogout()}
                   className="flex-1 sm:flex-none inline-flex justify-center items-center gap-2 rounded-full bg-red-500/10 hover:bg-red-500/20 py-2.5 px-5 text-sm font-semibold text-red-400 transition-all"
