@@ -31,6 +31,8 @@ type Event = {
 
 import { Suspense } from 'react';
 
+
+// added
 function CustomerPublicContent() {
   const router = useRouter();
   const searchParams = useSearchParams();

@@ -361,7 +361,7 @@ function GalleryIcon(props: any) {
     </svg>
   );
 }
-
+// added stuff
 function ErrorScreen({ message }: { message: string }) {
   return (
     <div className="min-h-screen bg-[#0A0C10] flex items-center justify-center p-6 font-sans">

@@ -12,6 +12,8 @@ export default function DashboardPage() {
     router.push("/dashboard/invoices");
   };
 
+  //added
+
   const handleAccessPass = () => {
     router.push("/dashboard/ticket");
   };
