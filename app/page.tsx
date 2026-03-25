@@ -32,7 +32,7 @@ type Event = {
 import { Suspense } from 'react';
 
 
-// added
+// added more
 function CustomerPublicContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
