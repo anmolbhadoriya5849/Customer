@@ -28,7 +28,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#0A0C10] px-4 sm:px-6 relative overflow-hidden font-sans">
-      
+
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[120px]" />

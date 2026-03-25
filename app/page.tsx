@@ -70,17 +70,6 @@ function CustomerPublicContent() {
     router.push(destination);
   }
 
-  function handleDashboard() {
-    if (authLoading) return;
-
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-
-    router.push('/dashboard')
-  }
-
   useEffect(() => {
     async function fetchEvents() {
       try {
@@ -154,7 +143,7 @@ function CustomerPublicContent() {
               <>
                 <button
                   className="flex-1 sm:flex-none inline-flex justify-center items-center gap-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/5 py-2.5 px-5 text-sm font-semibold text-white transition-all shadow-sm"
-                  onClick={handleDashboard}
+                  onClick={() => router.push('/dashboard')}
                 >
                   Dashboard
                 </button>
