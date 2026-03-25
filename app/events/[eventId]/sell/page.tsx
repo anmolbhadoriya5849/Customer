@@ -64,7 +64,7 @@ export default function SellPage() {
     const cart = selectedTickets.filter((ticket) => ticket.quantity > 0);
 
     const res = await axios.post(`${API_URL}/payment/initiate-payment`, {
-      distributorId,
+      distributorId: "13c5e53a-fe8e-449e-b7f4-7341f403cba6",
       name: buyer.name,
       email: buyer.email,
       phone: buyer.phone,
