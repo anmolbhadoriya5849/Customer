@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import axios from 'axios';
@@ -30,15 +30,8 @@ type Event = {
   };
 };
 
-import { Suspense } from 'react';
-
-
-// added more
 function CustomerPublicContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const distributorId = searchParams.get('d');
-
   const { user, loading: authLoading, logout } = useAuth();
 
   const [events, setEvents] = useState<Event[]>([]);
@@ -48,20 +41,9 @@ function CustomerPublicContent() {
   const API = process.env.NEXT_PUBLIC_API_URL;
   const isAuthenticated = Boolean(user);
 
-  function buildEventHref(eventId: string) {
-    const params = new URLSearchParams({ mode: 'public' });
-    if (distributorId) params.set('d', distributorId);
-    return `/events/${eventId}?${params.toString()}`;
-  }
-
-  function buildHomeHref() {
-    const params = new URLSearchParams();
-    if (distributorId) params.set('d', distributorId);
-    return params.toString() ? `/?${params.toString()}` : '/';
-  }
-
   function handleLogin() {
-    router.push(`/login?next=${encodeURIComponent(buildHomeHref())}`);
+    // Simply redirect to login, then back to home
+    router.push('/login?next=/');
   }
 
   async function handleLogout() {
@@ -74,12 +56,17 @@ function CustomerPublicContent() {
   }
 
   function handleEventClick(eventId: string) {
-    const destination = buildEventHref(eventId);
+    const destination = `/events/${eventId}`;
+
     if (authLoading) return;
+
+    // If not logged in, send to login and then to the event page
     if (!isAuthenticated) {
       router.push(`/login?next=${encodeURIComponent(destination)}`);
       return;
     }
+
+    // If logged in, just go straight to the event page
     router.push(destination);
   }
 
