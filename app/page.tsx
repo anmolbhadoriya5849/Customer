@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import axios from 'axios';
 import { useAuth } from '@/lib/useAuth';
 import {
@@ -61,10 +62,6 @@ function CustomerPublicContent() {
 
   function handleLogin() {
     router.push(`/login?next=${encodeURIComponent(buildHomeHref())}`);
-  }
-
-  function handleDashboard() {
-    router.push('/dashboard');
   }
 
   async function handleLogout() {
@@ -157,12 +154,12 @@ function CustomerPublicContent() {
           <div className="flex w-full sm:w-auto gap-2 p-2 sm:p-0">
             {isAuthenticated ? (
               <>
-                <button
-                  onClick={handleDashboard}
+                <Link
+                  href="/dashboard"
                   className="flex-1 sm:flex-none inline-flex justify-center items-center gap-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/5 py-2.5 px-5 text-sm font-semibold text-white transition-all shadow-sm"
                 >
                   <LayoutDashboard className="w-4 h-4 text-cyan-400" /> Dashboard
-                </button>
+                </Link>
                 <button
                   onClick={() => void handleLogout()}
                   className="flex-1 sm:flex-none inline-flex justify-center items-center gap-2 rounded-full bg-red-500/10 hover:bg-red-500/20 py-2.5 px-5 text-sm font-semibold text-red-400 transition-all"

@@ -1,23 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { FileText, Ticket, LogOut, LayoutDashboard, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FileText, Ticket, LayoutDashboard, ChevronRight } from "lucide-react";
 
 export default function DashboardPage() {
-  const router = useRouter();
-
-  const handleDownloadInvoice = () => {
-    router.push("/dashboard/invoices");
-  };
-
-  //added
-
-  const handleAccessPass = () => {
-    router.push("/dashboard/ticket");
-  };
-
   return (
     <main className="min-h-screen flex items-center justify-center bg-[#0A0C10] px-4 sm:px-6 relative overflow-hidden font-sans">
       
@@ -47,8 +33,8 @@ export default function DashboardPage() {
           <div className="space-y-4">
             
             {/* Primary Action */}
-            <button
-              onClick={handleAccessPass}
+            <Link
+              href="/dashboard/ticket"
               className="group w-full h-16 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-cyan-500/30 text-white text-base font-bold rounded-2xl transition-all flex items-center justify-between px-6"
             >
               <div className="flex items-center gap-4">
@@ -58,11 +44,11 @@ export default function DashboardPage() {
                 <span>Access Your Pass</span>
               </div>
               <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-cyan-400 transition-colors" />
-            </button>
+            </Link>
 
             {/* Secondary Action */}
-            <button
-              onClick={handleDownloadInvoice}
+            <Link
+              href="/dashboard/invoices"
               className="group w-full h-16 bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-white/10 text-slate-300 hover:text-white text-base font-bold rounded-2xl transition-all flex items-center justify-between px-6"
             >
               <div className="flex items-center gap-4">
@@ -72,7 +58,7 @@ export default function DashboardPage() {
                 <span>Download Invoice</span>
               </div>
               <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-slate-400 transition-colors" />
-            </button>
+            </Link>
 
           </div>
         </div>
