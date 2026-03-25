@@ -9,7 +9,7 @@ interface Pass {
   qrToken: string;
   qrKey: string;
   status: string;
-  signedUrl: string;
+  qrDataUrl: string;
   event: { name: string };
   category: { name: string };
   distributor: { name: string };
@@ -25,8 +25,8 @@ export default function TicketPage() {
     const fetchTickets = async () => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/customer/get-signed-url-passes`, {
-            method: "GET",
-            credentials: "include",
+          method: "GET",
+          credentials: "include",
         });
 
         if (!response.ok) {
@@ -64,8 +64,8 @@ export default function TicketPage() {
         {/* Loop through the tickets and display them */}
         <div className="space-y-6">
           {passes.map((pass) => (
-            <div 
-              key={pass.id} 
+            <div
+              key={pass.id}
               className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 flex flex-col md:flex-row gap-6 shadow-xl"
             >
               {/* Left Side: Ticket Details */}
@@ -96,8 +96,8 @@ export default function TicketPage() {
               {/* Right Side: QR Code */}
               <div className="flex flex-col items-center justify-center bg-white p-3 rounded-xl shrink-0 w-40 h-40 self-center">
                 <Image
-                  src={pass.signedUrl} 
-                  alt="Ticket QR Code" 
+                  src={pass.qrDataUrl}
+                  alt="Ticket QR Code"
                   className="w-full h-full object-contain"
                   width={160}
                   height={160}
