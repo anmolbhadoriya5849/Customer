@@ -16,7 +16,6 @@ export default function DashboardPage() {
     }
   }, [user, loading, router]);
 
-  // ⏳ While checking auth
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0A0C10]">
@@ -25,7 +24,6 @@ export default function DashboardPage() {
     );
   }
 
-  // 🚫 If no user, render nothing (redirect already triggered)
   if (!user) return null;
 
   return (

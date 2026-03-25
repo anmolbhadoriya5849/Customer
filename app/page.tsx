@@ -139,7 +139,7 @@ function CustomerPublicContent() {
           </div>
 
           <div className="flex w-full sm:w-auto gap-2 p-2 sm:p-0">
-            {isAuthenticated ? (
+            {user ? (
               <>
                 <Link
                   href="/dashboard"
