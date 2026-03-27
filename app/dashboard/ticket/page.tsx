@@ -1,112 +1,243 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
+import { useEffect, useState, useCallback, useRef } from "react";
 
-// This defines the shape of the data coming from the backend
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 interface Pass {
   id: string;
   qrToken: string;
-  qrKey: string;
   status: string;
   qrDataUrl: string;
+  expiresAt: number; // ms timestamp
   event: { name: string };
   category: { name: string };
   distributor: { name: string };
   order: { txnid: string; invoiceKey: string };
 }
 
-export default function TicketPage() {
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+
+export function useDynamicPasses() {
   const [passes, setPasses] = useState<Pass[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState<number>(30);
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/customer/get-signed-url-passes`, {
-          method: "GET",
-          credentials: "include",
-        });
+  const fetchPasses = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/customer/get-signed-url-passes`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to fetch passes");
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch tickets. Are you logged in?");
-        }
+      const data: Pass[] = await res.json();
+      setPasses(data);
+      setError(null);
 
-        const data = await response.json();
-        setPasses(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load tickets.");
-      } finally {
-        setLoading(false);
+      // All passes share the same 30s window, use the first one's expiresAt
+      if (data.length > 0) {
+        scheduleRefresh(data[0].expiresAt);
       }
-    };
-
-    fetchTickets();
+    } catch (err: any) {
+      setError(err.message ?? "Unknown error");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  const scheduleRefresh = (expiresAt: number) => {
+    // Clear any existing timers
+    if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    if (countdownTimer.current) clearInterval(countdownTimer.current);
+
+    const msUntilExpiry = expiresAt - Date.now();
+
+    // Countdown ticker (updates every second)
+    setSecondsLeft(Math.ceil(msUntilExpiry / 1000));
+    countdownTimer.current = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownTimer.current!);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    // Re-fetch right when the token expires
+    refreshTimer.current = setTimeout(() => {
+      fetchPasses();
+    }, msUntilExpiry);
+  };
+
+  useEffect(() => {
+    fetchPasses();
+    return () => {
+      if (refreshTimer.current) clearTimeout(refreshTimer.current);
+      if (countdownTimer.current) clearInterval(countdownTimer.current);
+    };
+  }, [fetchPasses]);
+
+  return { passes, loading, error, secondsLeft, refetch: fetchPasses };
+}
+
+// ─── QR Card Component ────────────────────────────────────────────────────────
+
+function CountdownRing({ secondsLeft }: { secondsLeft: number }) {
+  const radius = 20;
+  const circumference = 2 * Math.PI * radius;
+  const progress = secondsLeft / 30; // 30s window
+  const dashOffset = circumference * (1 - progress);
+
+  const color =
+    secondsLeft > 10 ? "#22c55e" : secondsLeft > 5 ? "#f59e0b" : "#ef4444";
+
   return (
-    <main className="min-h-screen flex flex-col items-center bg-[#020617] px-6 py-12">
-      <div className="w-full max-w-2xl">
-        <h1 className="text-3xl font-bold text-white mb-8">Your Tickets</h1>
+    <div className="relative flex items-center justify-center w-14 h-14">
+      <svg className="absolute" width="56" height="56" viewBox="0 0 56 56">
+        {/* Track */}
+        <circle
+          cx="28" cy="28" r={radius}
+          fill="none" stroke="#e5e7eb" strokeWidth="4"
+        />
+        {/* Progress */}
+        <circle
+          cx="28" cy="28" r={radius}
+          fill="none"
+          stroke={color}
+          strokeWidth="4"
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
+          strokeLinecap="round"
+          transform="rotate(-90 28 28)"
+          style={{ transition: "stroke-dashoffset 1s linear, stroke 0.3s" }}
+        />
+      </svg>
+      <span className="text-sm font-bold tabular-nums" style={{ color }}>
+        {secondsLeft}s
+      </span>
+    </div>
+  );
+}
 
-        {/* Show a loading message while waiting for the backend */}
-        {loading && <p className="text-gray-400">Loading your tickets...</p>}
+export function PassQRCard({ pass, secondsLeft }: { pass: Pass; secondsLeft: number }) {
+  const isExpiring = secondsLeft <= 5;
 
-        {/* Show an error message if something went wrong */}
-        {error && <p className="text-red-500 bg-red-500/10 p-4 rounded-lg border border-red-500/20">{error}</p>}
+  return (
+    <div
+      className={`rounded-2xl border bg-white shadow-sm p-5 flex flex-col gap-4 transition-all
+        ${isExpiring ? "border-red-300 shadow-red-100" : "border-gray-200"}`}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="font-semibold text-gray-900 text-lg">{pass.event.name}</p>
+          <p className="text-sm text-gray-500">{pass.category.name}</p>
+        </div>
+        <span
+          className={`text-xs font-medium px-2.5 py-1 rounded-full
+            ${pass.status === "ACTIVE"
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-100 text-gray-500"}`}
+        >
+          {pass.status}
+        </span>
+      </div>
 
-        {/* If no tickets are found after loading */}
-        {!loading && passes.length === 0 && !error && (
-          <p className="text-gray-400">You do not have any tickets yet.</p>
-        )}
+      {/* QR Code */}
+      <div className="flex flex-col items-center gap-3">
+        <div
+          className={`p-3 rounded-xl border-2 transition-all
+            ${isExpiring ? "border-red-300 opacity-60" : "border-gray-100"}`}
+        >
+          <img
+            src={pass.qrDataUrl}
+            alt="Pass QR Code"
+            width={200}
+            height={200}
+            className="block"
+          />
+        </div>
 
-        {/* Loop through the tickets and display them */}
-        <div className="space-y-6">
-          {passes.map((pass) => (
-            <div
-              key={pass.id}
-              className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 flex flex-col md:flex-row gap-6 shadow-xl"
-            >
-              {/* Left Side: Ticket Details */}
-              <div className="flex-1 space-y-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-white">{pass.event.name}</h2>
-                  <p className="text-indigo-400 font-medium">{pass.category.name} Pass</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-slate-400">Distributor</p>
-                    <p className="text-slate-200 font-medium">{pass.distributor.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-400">Status</p>
-                    <p className={`font-medium ${pass.status === 'ACTIVE' ? 'text-emerald-400' : 'text-amber-400'}`}>
-                      {pass.status}
-                    </p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-slate-400">Transaction ID</p>
-                    <p className="text-slate-200 font-mono text-xs truncate">{pass.order.txnid}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Side: QR Code */}
-              <div className="flex flex-col items-center justify-center bg-white p-3 rounded-xl shrink-0 w-40 h-40 self-center">
-                <Image
-                  src={pass.qrDataUrl}
-                  alt="Ticket QR Code"
-                  className="w-full h-full object-contain"
-                  width={160}
-                  height={160}
-                />
-              </div>
-            </div>
-          ))}
+        {/* Countdown */}
+        <div className="flex items-center gap-3">
+          <CountdownRing secondsLeft={secondsLeft} />
+          <p className="text-xs text-gray-400">
+            {isExpiring ? (
+              <span className="text-red-500 font-medium">Refreshing soon…</span>
+            ) : (
+              "QR refreshes automatically"
+            )}
+          </p>
         </div>
       </div>
-    </main>
+
+      {/* Footer */}
+      <div className="border-t pt-3 grid grid-cols-2 gap-2 text-xs text-gray-500">
+        <div>
+          <p className="font-medium text-gray-700">Distributor</p>
+          <p>{pass.distributor.name}</p>
+        </div>
+        <div>
+          <p className="font-medium text-gray-700">Order ID</p>
+          <p className="truncate">{pass.order.txnid}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Page Component ───────────────────────────────────────────────────────────
+
+export default function MyPassesPage() {
+  const { passes, loading, error, secondsLeft } = useDynamicPasses();
+
+  if (loading && passes.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-64 gap-3">
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-gray-500 text-sm">Loading your passes…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 text-sm">
+        {error}
+      </div>
+    );
+  }
+
+  if (passes.length === 0) {
+    return (
+      <div className="text-center text-gray-500 py-16">
+        No passes found for your account.
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-lg mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Passes</h1>
+
+      {/* Subtle refresh indicator */}
+      {loading && (
+        <div className="mb-4 flex items-center gap-2 text-sm text-blue-600">
+          <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          Refreshing QR codes…
+        </div>
+      )}
+
+      <div className="flex flex-col gap-5">
+        {passes.map((pass) => (
+          <PassQRCard key={pass.id} pass={pass} secondsLeft={secondsLeft} />
+        ))}
+      </div>
+    </div>
   );
 }

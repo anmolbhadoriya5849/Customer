@@ -75,7 +75,7 @@ export default function SellPage() {
 
     if (res.status === 200) {
       const accesskey = res.data.paymentLink.data;
-      window.location.href = `https://testpay.easebuzz.in/pay/${accesskey}`;
+      window.location.href = `https://pay.easebuzz.in/pay/${accesskey}`;
     }
   }
 
