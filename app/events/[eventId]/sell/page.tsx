@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
+import { toast } from "sonner"
 import SelectTickets, { TicketCategory } from "./SelectTickets";
 import {
   User,
@@ -13,7 +14,6 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/lib/useAuth";
-import { toast } from "sonner";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -72,15 +72,22 @@ export default function SellPage() {
       eventId,
       categoryId: cart[0].id,
       quantity: cart[0].quantity,
+    }, {
+      // LAYMAN'S EXPLANATION: This tells Axios "Don't throw an error if status is 400. 
+      // Just give me the response so my 'if' statements can work."
+      validateStatus: (status) => status < 500
     });
 
-    if (res.status === 400) {
-      toast("Tickets Sold Out")
-    }
-
+    console.log(res)
     if (res.status === 200) {
       const accesskey = res.data.paymentLink.data;
       window.location.href = `https://pay.easebuzz.in/pay/${accesskey}`;
+    }
+
+    // true
+    if (res.status === 400) {
+      console.log("Sold")
+      toast("Tickets Sold Out")
     }
 
   }

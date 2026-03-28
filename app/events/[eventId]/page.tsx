@@ -76,14 +76,14 @@ export default async function EventPage({
 
   return (
     <div className="min-h-screen text-white overflow-x-hidden bg-[#0A0C10] font-sans selection:bg-cyan-500/30">
-      
+
       {/* Enables smooth scrolling for the "Book Now" anchor link */}
       <style>{`html { scroll-behavior: smooth; }`}</style>
 
       {/* ── AMBIENT BACKGROUND ── */}
       <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[120px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[120px]" />
       </div>
 
       {/* ── RACING STRIPE ── */}
@@ -118,7 +118,7 @@ export default async function EventPage({
             <Ticket className="w-10 h-10 text-cyan-500/30" />
           </div>
         )}
-        
+
         {/* Event name overlaid on mobile hero */}
         <div className="absolute bottom-0 left-0 right-0 px-5 pb-6">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-none mb-3 drop-shadow-lg">
@@ -132,14 +132,36 @@ export default async function EventPage({
       </div>
 
       {/* ════════════════════════════════════════
-          DESKTOP HERO — Cinematic full-width
+          DESKTOP HERO — Cinematic full-width (Spotify Style)
       ════════════════════════════════════════ */}
-      <div className="hidden lg:block relative w-full h-[55vh] min-h-[400px] max-h-[600px] overflow-hidden">
+      <div className="hidden lg:block relative w-full h-[55vh] min-h-[400px] max-h-[600px] overflow-hidden bg-[#0A0C10]">
         {event.posterUrl ? (
           <>
-            <Image src={event.posterUrl} alt={event.name} fill className="object-cover object-top" priority />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0A0C10]/10 via-[#0A0C10]/60 to-[#0A0C10]" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0A0C10]/80 via-[#0A0C10]/40 to-transparent" />
+            {/* 1. MASSIVE BLURRED BACKGROUND: Fills the wide space with ambient color */}
+            <Image
+              src={event.posterUrl}
+              alt={`${event.name} ambient background`}
+              fill
+              className="object-cover blur-[80px] opacity-40 scale-110"
+              priority
+            />
+
+            {/* 2. CRISP FOREGROUND IMAGE: Shows the whole portrait poster without cropping */}
+            <div className="absolute inset-0 flex justify-end max-w-7xl mx-auto px-12">
+              <div className="relative w-1/2 h-full">
+                <Image
+                  src={event.posterUrl}
+                  alt={event.name}
+                  fill
+                  className="object-contain object-right drop-shadow-[0_0_40px_rgba(0,0,0,0.8)] z-0"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* 3. GRADIENTS: Ensures text is always readable over the background */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] via-[#0A0C10]/40 to-transparent z-0" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0A0C10] via-[#0A0C10]/80 to-transparent z-0" />
           </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-slate-900 to-[#0A0C10]" />
@@ -184,7 +206,7 @@ export default async function EventPage({
 
             {/* About */}
             <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 sm:p-8">
-               <AboutEvent description={event.description} />
+              <AboutEvent description={event.description} />
             </div>
 
             {/* Artist Lineup */}
