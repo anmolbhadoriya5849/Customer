@@ -74,13 +74,15 @@ export default function SellPage() {
       quantity: cart[0].quantity,
     });
 
+    if (res.status === 400) {
+      toast("Tickets Sold Out")
+    }
+
     if (res.status === 200) {
       const accesskey = res.data.paymentLink.data;
       window.location.href = `https://pay.easebuzz.in/pay/${accesskey}`;
     }
-    else if (res.status === 400) {
-      toast("Tickets Sold Out")
-    }
+
   }
 
   function calculateTotal() {
