@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/lib/useAuth";
+import { toast } from "sonner";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -76,6 +77,9 @@ export default function SellPage() {
     if (res.status === 200) {
       const accesskey = res.data.paymentLink.data;
       window.location.href = `https://pay.easebuzz.in/pay/${accesskey}`;
+    }
+    else if (res.status === 400) {
+      toast("Tickets Sold Out")
     }
   }
 
