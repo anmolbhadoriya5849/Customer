@@ -70,18 +70,18 @@ async function handlePayment() {
   const cart = selectedTickets.filter((ticket) => ticket.quantity > 0);
 
   if (cart.length === 0) {
-    toast("Please select at least one ticket");
+    toast.error("Please select at least one ticket");
     return;
   }
 
   if (loading) {
-    toast("Please wait...");
+    toast.loading("Please wait...");
     return;
   }
 
   if (!user?.email) {
-    toast("Please login again");
-    router.push(`/login?next=/event/${eventId}`);
+    toast.error("Please login again");
+    router.push(`/login?next=/events/${eventId}/sell`);
     return;
   }
 
