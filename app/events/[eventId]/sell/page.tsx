@@ -275,7 +275,7 @@ const ReviewAndPayStep = ({
   const totalQuantity = cart.reduce((sum: number, t: any) => sum + t.quantity, 0);
   const platformFee = PLATFORM_FEE * totalQuantity;
   const gstAmount = Math.round(platformFee * GST_RATE);
-  const total = subtotal + platformFee + gstAmount;
+  const total = Math.round(subtotal + platformFee + gstAmount);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
