@@ -237,7 +237,7 @@ function CustomerPublicContent() {
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/5 text-violet-400 shrink-0">
                       <MapPin className="w-3.5 h-3.5" />
                     </div>
-                    <span className="truncate font-medium text-slate-300">{ev.location ?? "Venue to be announced"}</span>
+                    <span className="truncate font-medium text-slate-300">{ev.location ?? "Phoenix Citadel Mall"}</span>
                   </div>
                 </div>
 
