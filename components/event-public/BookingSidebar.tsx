@@ -20,8 +20,9 @@ export function BookingSidebar({
   minPrice: number;
   mode: string;
 }) {
-  const formattedDate = event.startDate ? format(new Date(event.startDate), "EEE, dd MMM") : "TBA";
-  const formattedTime = event.startDate ? format(new Date(event.startDate), "h:mm a") : "TBA";
+   const adjustedDate = event.startDate ? new Date(new Date(event.startDate).getTime() + 5.5 * 60 * 60 * 1000) : null;
+   const formattedDate = adjustedDate ? format(adjustedDate, "EEEE, dd MMMM yyyy") : "TBA";
+   const formattedTime = adjustedDate ? format(adjustedDate, "h:mm a") : "TBA";
 
   const router = useRouter();
   const params = useParams();
