@@ -113,9 +113,9 @@ export default function SellPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/login");
+      router.push(`/login?next=/event/${eventId}`);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, eventId]);
 
   if (loading) {
   return <div>Loading...</div>; // or your cool loader

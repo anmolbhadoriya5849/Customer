@@ -26,7 +26,7 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next");
-  const redirectPath = nextPath?.startsWith("/") ? nextPath : "/dashboard";
+  const redirectPath = nextPath?.startsWith("/") ? nextPath : "/";
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
