@@ -167,6 +167,7 @@ function CustomerPublicContent() {
       </div>
 
       {/* Events Grid */}
+{/* Events Grid */}
       {events.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-32 rounded-[2.5rem] bg-white/[0.02] border border-white/5 border-dashed">
           <Ticket className="w-12 h-12 text-slate-700 mb-4" />
@@ -178,26 +179,40 @@ function CustomerPublicContent() {
             <div
               key={ev.id}
               onClick={() => handleEventClick(ev.id)}
-              className="group flex flex-col bg-white/[0.02] border border-white/5 rounded-3xl overflow-hidden cursor-pointer hover:border-cyan-500/30 hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-500/10"
+              className="group flex flex-col bg-[#0A0C10] border border-white/5 rounded-3xl overflow-hidden cursor-pointer hover:border-cyan-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-500/10"
             >
-              {/* Poster Area */}
-              <div className="relative aspect-[4/3] sm:aspect-[4/5] w-full bg-[#0A0C10] overflow-hidden shrink-0">
+              {/* ── FIXED POSTER AREA ── */}
+              <div className="relative aspect-[4/3] sm:aspect-[4/5] w-full bg-[#050608] overflow-hidden shrink-0">
                 {ev.posterUrl ? (
-                  <Image
-                    src={ev.posterUrl}
-                    alt={ev.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                  <>
+                    {/* 1. Ambient Blurred Background */}
+                    <Image
+                      src={ev.posterUrl}
+                      alt={`${ev.name} background`}
+                      fill
+                      className="object-cover blur-2xl opacity-40 scale-125 transition-transform duration-700 group-hover:scale-[1.35] z-0"
+                    />
+                    
+                    {/* 2. Uncropped Crisp Foreground */}
+                    <Image
+                      src={ev.posterUrl}
+                      alt={ev.name}
+                      fill
+                      className="object-contain p-4 drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-[1.05] z-10"
+                    />
+                    
+                    {/* Bottom Protection Gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] via-transparent to-transparent z-20 pointer-events-none" />
+                  </>
                 ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700 gap-3 bg-gradient-to-br from-[#12151c] to-[#0A0C10]">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-700 gap-3 bg-gradient-to-br from-[#12151c] to-[#0A0C10] z-10">
                     <Ticket className="w-10 h-10 opacity-50" />
                     <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">No Poster Available</span>
                   </div>
                 )}
 
                 {/* Organizer Badge */}
-                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-black/50">
+                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-black/50 z-30">
                   <Building2 className="w-3.5 h-3.5 text-cyan-400" />
                   <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">
                     {ev.organizer?.companyName ?? 'Organizer'}
@@ -206,20 +221,20 @@ function CustomerPublicContent() {
               </div>
 
               {/* Card Content Area */}
-              <div className="p-6 sm:p-8 flex flex-col flex-grow z-10 relative">
+              <div className="p-6 sm:p-8 flex flex-col flex-grow z-30 relative bg-[#0A0C10]">
                 <h2 className="text-xl sm:text-2xl font-bold text-white leading-snug line-clamp-2 mb-6 group-hover:text-cyan-400 transition-colors">
                   {ev.name}
                 </h2>
 
                 <div className="space-y-4 mb-8 flex-grow">
                   <div className="flex items-center gap-3 text-sm text-slate-400">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/5 text-cyan-400">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/5 text-cyan-400 shrink-0">
                       <Calendar className="w-3.5 h-3.5" />
                     </div>
                     <span className="font-medium text-slate-300">{new Date(ev.startDate).toDateString()}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-slate-400">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/5 text-violet-400">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.05] border border-white/5 text-violet-400 shrink-0">
                       <MapPin className="w-3.5 h-3.5" />
                     </div>
                     <span className="truncate font-medium text-slate-300">{ev.location ?? "Venue to be announced"}</span>

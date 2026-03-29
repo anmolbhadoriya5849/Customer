@@ -104,71 +104,77 @@ export default async function EventPage({
         </div>
       </nav>
 
-      {/* ════════════════════════════════════════
+{/* ════════════════════════════════════════
           MOBILE HERO — Full-bleed cinematic
       ════════════════════════════════════════ */}
-      <div className="lg:hidden relative w-full h-[70vw] min-h-[280px] max-h-[420px]">
+      <div className="lg:hidden relative w-full aspect-[16/9] min-h-[250px] bg-[#0A0C10] flex items-center justify-center overflow-hidden pt-16 pb-4">
         {event.posterUrl ? (
           <>
-            <Image src={event.posterUrl} alt={event.name} fill className="object-cover object-top" priority />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A0C10]/60 to-[#0A0C10]" />
+            {/* 1. Ambient Background Blur */}
+            <Image 
+              src={event.posterUrl} 
+              alt={`${event.name} ambient`} 
+              fill 
+              className="object-cover blur-2xl opacity-50 scale-125 z-0" 
+              priority 
+            />
+            {/* 2. Uncropped Crisp Foreground */}
+            <Image 
+              src={event.posterUrl} 
+              alt={event.name} 
+              fill 
+              className="object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-10 p-4" 
+              priority 
+            />
+            {/* Bottom protection gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] via-transparent to-transparent z-20 pointer-events-none" />
           </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-slate-900 to-[#0A0C10] flex items-center justify-center">
             <Ticket className="w-10 h-10 text-cyan-500/30" />
           </div>
         )}
-
-        {/* Event name overlaid on mobile hero */}
-        <div className="absolute bottom-0 left-0 right-0 px-5 pb-6">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-none mb-3 drop-shadow-lg">
-            {event.name}
-          </h1>
-          <div className="flex flex-wrap gap-2">
-            <MetaPill icon={<Calendar className="w-3.5 h-3.5 text-cyan-400" />} text={formattedDate} />
-            {event.city && <MetaPill icon={<MapPin className="w-3.5 h-3.5 text-cyan-400" />} text={event.city} />}
-          </div>
-        </div>
+        {/* Notice: I removed the overlapping text block here so the bottom sponsors stay 100% visible. 
+            The mobile title is already handled perfectly in the main content grid below. */}
       </div>
 
       {/* ════════════════════════════════════════
-          DESKTOP HERO — Cinematic full-width (Spotify Style)
+          DESKTOP HERO — Cinematic full-width (Wide Banner Style)
       ════════════════════════════════════════ */}
-      <div className="hidden lg:block relative w-full h-[55vh] min-h-[400px] max-h-[600px] overflow-hidden bg-[#0A0C10]">
+      <div className="hidden lg:block relative w-full h-[60vh] min-h-[500px] max-h-[700px] overflow-hidden bg-[#0A0C10]">
         {event.posterUrl ? (
           <>
-            {/* 1. MASSIVE BLURRED BACKGROUND: Fills the wide space with ambient color */}
-            <Image
-              src={event.posterUrl}
-              alt={`${event.name} ambient background`}
-              fill
-              className="object-cover blur-[80px] opacity-40 scale-110"
-              priority
+            {/* 1. MASSIVE BLURRED BACKGROUND: Fills the screen with the poster's colors */}
+            <Image 
+              src={event.posterUrl} 
+              alt={`${event.name} ambient background`} 
+              fill 
+              className="object-cover blur-[80px] opacity-40 scale-110 z-0" 
+              priority 
             />
-
-            {/* 2. CRISP FOREGROUND IMAGE: Shows the whole portrait poster without cropping */}
-            <div className="absolute inset-0 flex justify-end max-w-7xl mx-auto px-12">
-              <div className="relative w-1/2 h-full">
-                <Image
-                  src={event.posterUrl}
-                  alt={event.name}
-                  fill
-                  className="object-contain object-right drop-shadow-[0_0_40px_rgba(0,0,0,0.8)] z-0"
-                  priority
+            
+            {/* 2. CRISP CENTERED BANNER: Shows the wide banner perfectly without cropping */}
+            <div className="absolute inset-0 flex items-center justify-center max-w-7xl mx-auto px-12 pb-24 pt-12 z-10">
+              <div className="relative w-full h-full">
+                <Image 
+                  src={event.posterUrl} 
+                  alt={event.name} 
+                  fill 
+                  className="object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.9)]" 
+                  priority 
                 />
               </div>
             </div>
 
-            {/* 3. GRADIENTS: Ensures text is always readable over the background */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] via-[#0A0C10]/40 to-transparent z-0" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0A0C10] via-[#0A0C10]/80 to-transparent z-0" />
+            {/* 3. GRADIENTS: Ensures the desktop text at the bottom is perfectly readable */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] via-[#0A0C10]/60 to-transparent z-10 pointer-events-none" />
           </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-slate-900 to-[#0A0C10]" />
         )}
 
         {/* Desktop hero content */}
-        <div className="absolute bottom-0 left-0 right-0 px-12 pb-12 max-w-7xl mx-auto w-full z-10">
+        <div className="absolute bottom-0 left-0 right-0 px-12 pb-12 max-w-7xl mx-auto w-full z-20">
           <EyebrowLabel text="Live Experience" />
           <h1 className="text-6xl xl:text-7xl font-extrabold text-white tracking-tight leading-[1.1] mt-4 mb-6 drop-shadow-2xl max-w-4xl">
             {event.name}
