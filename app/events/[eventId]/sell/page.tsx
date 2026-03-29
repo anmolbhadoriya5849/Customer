@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@/lib/useAuth";
+import { useRouter } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -27,6 +28,7 @@ export default function SellPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedTickets, setSelectedTickets] = useState<TicketCategory[]>([]);
   const { user } = useAuth();
+  const router = useRouter();
 
   const [buyer, setBuyer] = useState({ name: "", phone: "" });
   // const distributorId = searchParams.get("d") ?? user?.id ?? "";
@@ -102,6 +104,10 @@ export default function SellPage() {
     const platformFee = PLATFORM_FEE * qty;
     const gst = Math.round(platformFee * GST_RATE);
     return calculateSubtotal() + platformFee + gst;
+  }
+
+  if(!user) {
+    router.push("/login");
   }
 
   return (
