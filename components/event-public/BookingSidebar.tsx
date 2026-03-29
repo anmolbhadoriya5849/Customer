@@ -20,7 +20,7 @@ export function BookingSidebar({
   minPrice: number;
   mode: string;
 }) {
-   const adjustedDate = event.startDate ? new Date(new Date(event.startDate).getTime() + 5.5 * 60 * 60 * 1000) : null;
+   const adjustedDate = event.startDate ? new Date(new Date(event.startDate).getTime() - 5.5 * 60 * 60 * 1000) : null;
    const formattedDate = adjustedDate ? format(adjustedDate, "EEEE, dd MMMM yyyy") : "TBA";
    const formattedTime = adjustedDate ? format(adjustedDate, "h:mm a") : "TBA";
 
