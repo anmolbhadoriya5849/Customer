@@ -27,7 +27,7 @@ export default function SellPage() {
   const eventId = params.eventId as string;
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedTickets, setSelectedTickets] = useState<TicketCategory[]>([]);
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   const [buyer, setBuyer] = useState({ name: "", phone: "" });
@@ -66,6 +66,11 @@ export default function SellPage() {
 
   async function handlePayment() {
     const cart = selectedTickets.filter((ticket) => ticket.quantity > 0);
+
+    if (!user?.email) {
+      toast("Something went wrong. Please login again.");
+      return;
+    }
 
     const res = await axios.post(`${API_URL}/payment/initiate-payment`, {
       distributorId: "13c5e53a-fe8e-449e-b7f4-7341f403cba6",
@@ -106,9 +111,16 @@ export default function SellPage() {
     return calculateSubtotal() + platformFee + gst;
   }
 
-  if(!user) {
-    router.push("/login");
-  }
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+  return <div>Loading...</div>; // or your cool loader
+}
+
 
   return (
     <main className="min-h-screen bg-[#0b0f19] text-white selection:bg-cyan-500/30 relative overflow-hidden">
