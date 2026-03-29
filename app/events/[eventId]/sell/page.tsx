@@ -6,7 +6,6 @@ import { toast } from "sonner"
 import SelectTickets, { TicketCategory } from "./SelectTickets";
 import {
   User,
-  Mail,
   Phone,
   ChevronLeft,
   CheckCircle2,
@@ -17,6 +16,10 @@ import { useAuth } from "@/lib/useAuth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+const PLATFORM_FEE = 100;
+const GST_RATE = 0.18;
+const GST_AMOUNT = Math.round(PLATFORM_FEE * GST_RATE); // ₹18
+
 export default function SellPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -25,8 +28,8 @@ export default function SellPage() {
   const [selectedTickets, setSelectedTickets] = useState<TicketCategory[]>([]);
   const { user } = useAuth();
 
-  const [buyer, setBuyer] = useState({ name: "", email: "", phone: "" });
-  const distributorId = searchParams.get("d") ?? user?.id ?? "";
+  const [buyer, setBuyer] = useState({ name: "", phone: "" });
+  // const distributorId = searchParams.get("d") ?? user?.id ?? "";
 
   useEffect(() => {
     async function fetchCategories() {
@@ -55,8 +58,6 @@ export default function SellPage() {
     fetchCategories();
   }, [eventId]);
 
-  // --- Actions ---
-
   function handleTicketChange(updatedTickets: TicketCategory[]) {
     setSelectedTickets(updatedTickets);
   }
@@ -67,39 +68,39 @@ export default function SellPage() {
     const res = await axios.post(`${API_URL}/payment/initiate-payment`, {
       distributorId: "13c5e53a-fe8e-449e-b7f4-7341f403cba6",
       name: buyer.name,
-      email: buyer.email,
+      email: user?.email,
       phone: buyer.phone,
       eventId,
       categoryId: cart[0].id,
       quantity: cart[0].quantity,
     }, {
-      // LAYMAN'S EXPLANATION: This tells Axios "Don't throw an error if status is 400. 
-      // Just give me the response so my 'if' statements can work."
       validateStatus: (status) => status < 500
     });
 
-    console.log(res)
+    console.log(res);
     if (res.status === 200) {
       const accesskey = res.data.paymentLink.data;
       window.location.href = `https://pay.easebuzz.in/pay/${accesskey}`;
     }
 
-    // true
     if (res.status === 400) {
-      console.log("Sold")
-      toast("Tickets Sold Out")
+      console.log("Sold");
+      toast("Tickets Sold Out");
     }
+  }
 
+  function calculateSubtotal() {
+    return selectedTickets.reduce((sum, t) => sum + (t.price * t.quantity), 0);
   }
 
   function calculateTotal() {
-    return selectedTickets.reduce((sum, t) => sum + (t.price * t.quantity), 0);
+    return calculateSubtotal() + PLATFORM_FEE + GST_AMOUNT;
   }
 
   return (
     <main className="min-h-screen bg-[#0b0f19] text-white selection:bg-cyan-500/30 relative overflow-hidden">
 
-      {/* Background Glow Effects (Maintaining Theme) */}
+      {/* Background Glow Effects */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[120px]" />
@@ -117,7 +118,7 @@ export default function SellPage() {
               <ChevronLeft className="w-5 h-5" />
             </button>
           ) : (
-            <div className="w-10 h-10" /> /* Spacer to keep dots centered */
+            <div className="w-10 h-10" />
           )}
 
           {/* Progress Dots */}
@@ -125,9 +126,10 @@ export default function SellPage() {
             {[1, 2, 3].map((s) => (
               <div
                 key={s}
-                className={`h-1.5 rounded-full transition-all duration-500 ${s === step ? "w-10 bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.5)]" :
+                className={`h-1.5 rounded-full transition-all duration-500 ${
+                  s === step ? "w-10 bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.5)]" :
                   s < step ? "w-6 bg-cyan-600/50" : "w-2 bg-slate-800"
-                  }`}
+                }`}
               />
             ))}
           </div>
@@ -152,6 +154,7 @@ export default function SellPage() {
           )}
           {step === 3 && (
             <ReviewAndPayStep
+              calculateSubtotal={calculateSubtotal}
               calculateTotal={calculateTotal}
               selectedTickets={selectedTickets}
               handlePayment={handlePayment}
@@ -170,8 +173,8 @@ const BuyerDetailsStep = ({
   setBuyer,
   onNext,
 }: {
-  buyer: { name: string; email: string; phone: string };
-  setBuyer: React.Dispatch<React.SetStateAction<{ name: string; email: string; phone: string }>>;
+  buyer: { name: string; phone: string };
+  setBuyer: React.Dispatch<React.SetStateAction<{ name: string; phone: string }>>;
   onNext: () => void;
 }) => (
   <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -195,16 +198,6 @@ const BuyerDetailsStep = ({
         />
       </div>
       <div className="relative group">
-        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
-        <input
-          type="email"
-          placeholder="Email Address"
-          value={buyer.email}
-          onChange={(e) => setBuyer({ ...buyer, email: e.target.value })}
-          className="w-full bg-slate-950/50 border border-slate-700 text-white rounded-xl py-3.5 pl-12 pr-4 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all placeholder:text-slate-600"
-        />
-      </div>
-      <div className="relative group">
         <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" />
         <input
           type="tel"
@@ -217,7 +210,7 @@ const BuyerDetailsStep = ({
     </div>
 
     <button
-      disabled={!buyer.name || !buyer.email || !buyer.phone}
+      disabled={!buyer.name || !buyer.phone}
       onClick={onNext}
       className="w-full h-14 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 rounded-xl font-bold text-white shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
     >
@@ -227,14 +220,17 @@ const BuyerDetailsStep = ({
 );
 
 const ReviewAndPayStep = ({
+  calculateSubtotal,
   calculateTotal,
   selectedTickets,
-  handlePayment
+  handlePayment,
 }: {
+  calculateSubtotal: () => number;
   calculateTotal: () => number;
   selectedTickets: TicketCategory[];
   handlePayment: () => Promise<void> | void;
 }) => {
+  const subtotal = calculateSubtotal();
   const total = calculateTotal();
   const cart = selectedTickets.filter(t => t.quantity > 0);
 
@@ -250,8 +246,10 @@ const ReviewAndPayStep = ({
 
       {/* Ticket Summary Box */}
       <div className="bg-slate-950/50 border border-slate-700 rounded-2xl p-5 sm:p-6 space-y-4 shadow-inner">
+
+        {/* Ticket line items */}
         {cart.map(t => (
-          <div key={t.id} className="flex justify-between items-center text-sm sm:text-base border-b border-slate-800 pb-4 last:border-0 last:pb-0">
+          <div key={t.id} className="flex justify-between items-center text-sm sm:text-base border-b border-slate-800 pb-4">
             <div>
               <span className="text-slate-200 font-semibold">{t.name}</span>
               <span className="bg-slate-800 text-cyan-400 text-xs font-bold px-2 py-1 rounded-md ml-3">x{t.quantity}</span>
@@ -260,7 +258,29 @@ const ReviewAndPayStep = ({
           </div>
         ))}
 
-        <div className="flex justify-between items-center pt-4 border-t border-slate-700/50">
+        {/* Subtotal */}
+        <div className="flex justify-between items-center text-sm sm:text-base border-b border-slate-800 pb-4">
+          <span className="text-slate-400 font-medium">Subtotal</span>
+          <span className="text-white font-mono font-bold">₹{subtotal}</span>
+        </div>
+
+        {/* Platform Fee */}
+        <div className="flex justify-between items-center text-sm sm:text-base border-b border-slate-800 pb-4">
+          <span className="text-slate-400 font-medium">Platform Fee</span>
+          <span className="text-white font-mono font-bold">₹{PLATFORM_FEE}</span>
+        </div>
+
+        {/* GST on Platform Fee */}
+        <div className="flex justify-between items-center text-sm sm:text-base border-b border-slate-800 pb-4">
+          <span className="text-slate-400 font-medium">
+            GST on Platform Fee{" "}
+            <span className="text-xs text-slate-600">(18%)</span>
+          </span>
+          <span className="text-white font-mono font-bold">₹{GST_AMOUNT}</span>
+        </div>
+
+        {/* Grand Total */}
+        <div className="flex justify-between items-center pt-2">
           <span className="text-slate-400 font-medium uppercase tracking-wider text-sm">Total Payable</span>
           <span className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">
             ₹{total}
