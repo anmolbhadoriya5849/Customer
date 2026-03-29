@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Suspense } from 'react';
+import { useAuth } from "@/lib/useAuth";
 
 function LoginContent() {
   const [email, setEmail] = useState("");
@@ -27,6 +28,7 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next");
   const redirectPath = nextPath?.startsWith("/") ? nextPath : "/";
+  const { refreshUser } = useAuth();
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,6 +67,7 @@ function LoginContent() {
 
       if (response.status === 200) {
         toast.success("OTP verified successfully");
+        await refreshUser();
         router.push(redirectPath);
       }
 

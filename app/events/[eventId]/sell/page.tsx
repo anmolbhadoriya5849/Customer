@@ -17,9 +17,8 @@ import { useRouter } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const PLATFORM_FEE = 100;
+const PLATFORM_FEE = 44.72;
 const GST_RATE = 0.18;
-const GST_AMOUNT = Math.round(PLATFORM_FEE * GST_RATE); // ₹18
 
 export default function SellPage() {
   const params = useParams();
@@ -32,6 +31,9 @@ export default function SellPage() {
 
   const [buyer, setBuyer] = useState({ name: "", phone: "" });
   // const distributorId = searchParams.get("d") ?? user?.id ?? "";
+
+  console.log("USER:", user);
+  console.log("LOADING:", loading);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -64,37 +66,52 @@ export default function SellPage() {
     setSelectedTickets(updatedTickets);
   }
 
-  async function handlePayment() {
-    const cart = selectedTickets.filter((ticket) => ticket.quantity > 0);
+async function handlePayment() {
+  const cart = selectedTickets.filter((ticket) => ticket.quantity > 0);
 
-    if (!user?.email) {
-      toast("Something went wrong. Please login again.");
-      return;
-    }
+  if (cart.length === 0) {
+    toast("Please select at least one ticket");
+    return;
+  }
 
-    const res = await axios.post(`${API_URL}/payment/initiate-payment`, {
-      distributorId: "13c5e53a-fe8e-449e-b7f4-7341f403cba6",
-      name: buyer.name,
-      email: user?.email,
-      phone: buyer.phone,
-      eventId,
-      categoryId: cart[0].id,
-      quantity: cart[0].quantity,
-    }, {
-      validateStatus: (status) => status < 500
-    });
+  if (loading) {
+    toast("Please wait...");
+    return;
+  }
 
-    console.log(res);
+  if (!user?.email) {
+    toast("Please login again");
+    router.push(`/login?next=/event/${eventId}`);
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      `${API_URL}/payment/initiate-payment`,
+      {
+        distributorId: "13c5e53a-fe8e-449e-b7f4-7341f403cba6",
+        name: buyer.name,
+        email: user.email,
+        phone: buyer.phone,
+        eventId,
+        categoryId: cart[0].id,
+        quantity: cart[0].quantity,
+      },
+      {
+        validateStatus: (status) => status < 500,
+      }
+    );
+
     if (res.status === 200) {
       const accesskey = res.data.paymentLink.data;
       window.location.href = `https://pay.easebuzz.in/pay/${accesskey}`;
-    }
-
-    if (res.status === 400) {
-      console.log("Sold");
+    } else if (res.status === 400) {
       toast("Tickets Sold Out");
     }
+  } catch (err) {
+    toast("Something went wrong. Try again.");
   }
+}
 
   function calculateSubtotal() {
     return selectedTickets.reduce((sum, t) => sum + (t.price * t.quantity), 0);
@@ -117,10 +134,10 @@ export default function SellPage() {
     }
   }, [user, loading, router, eventId]);
 
-  if (loading) {
-  return <div>Loading...</div>; // or your cool loader
-}
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <main className="min-h-screen bg-[#0b0f19] text-white selection:bg-cyan-500/30 relative overflow-hidden">

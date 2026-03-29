@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-
 type AuthUser = {
   id: string;
   email?: string;
@@ -12,25 +11,23 @@ export function useAuth() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchMe() {
-      try {
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/customer`,
-          { withCredentials: true }
-        );
+  // 🔥 reusable function
+  const fetchMe = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/customer`,
+        { withCredentials: true }
+      );
 
-        // dekhte hai
-        console.log(res.data);
-
-        setUser(res.data);
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
+      setUser(res.data);
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
+  };
 
+  useEffect(() => {
     fetchMe();
   }, []);
 
@@ -43,5 +40,5 @@ export function useAuth() {
     setUser(null);
   }
 
-  return { user, loading, logout };
+  return { user, loading, logout, refreshUser: fetchMe };
 }
