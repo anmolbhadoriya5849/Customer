@@ -130,7 +130,7 @@ async function handlePayment() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push(`/login?next=/event/${eventId}`);
+      router.push(`/login?next=/events/${eventId}/sell`);
     }
   }, [user, loading, router, eventId]);
 
