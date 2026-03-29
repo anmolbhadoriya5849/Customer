@@ -93,8 +93,15 @@ export default function SellPage() {
     return selectedTickets.reduce((sum, t) => sum + (t.price * t.quantity), 0);
   }
 
+  function getTotalQuantity() {
+    return selectedTickets.reduce((sum, t) => sum + t.quantity, 0);
+  }
+
   function calculateTotal() {
-    return calculateSubtotal() + PLATFORM_FEE + GST_AMOUNT;
+    const qty = getTotalQuantity();
+    const platformFee = PLATFORM_FEE * qty;
+    const gst = Math.round(platformFee * GST_RATE);
+    return calculateSubtotal() + platformFee + gst;
   }
 
   return (
@@ -158,6 +165,7 @@ export default function SellPage() {
               calculateTotal={calculateTotal}
               selectedTickets={selectedTickets}
               handlePayment={handlePayment}
+              totalQuantity={getTotalQuantity()}
             />
           )}
         </div>
@@ -223,83 +231,74 @@ const ReviewAndPayStep = ({
   calculateSubtotal,
   calculateTotal,
   selectedTickets,
-  handlePayment,
-}: {
-  calculateSubtotal: () => number;
-  calculateTotal: () => number;
-  selectedTickets: TicketCategory[];
-  handlePayment: () => Promise<void> | void;
-}) => {
+  paymentMethod,
+  setPaymentMethod,
+  handlePayment
+}: any) => {
   const subtotal = calculateSubtotal();
-  const total = calculateTotal();
-  const cart = selectedTickets.filter(t => t.quantity > 0);
+  const cart = selectedTickets.filter((t: any) => t.quantity > 0);
+  const totalQuantity = cart.reduce((sum: number, t: any) => sum + t.quantity, 0);
+  const platformFee = PLATFORM_FEE * totalQuantity;
+  const gstAmount = Math.round(platformFee * GST_RATE);
+  const total = subtotal + platformFee + gstAmount;
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="text-center sm:text-left flex flex-col items-center sm:items-start">
-        <div className="w-12 h-12 bg-violet-500/10 border border-violet-500/20 rounded-2xl flex items-center justify-center mb-4 shadow-[0_0_15px_rgba(139,92,246,0.15)]">
-          <CreditCard className="text-violet-400 w-6 h-6" />
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Order Summary</h2>
-        <p className="text-slate-400 mt-2 text-sm sm:text-base">Review your details before secure checkout.</p>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div>
+        <h2 className="text-2xl font-bold text-white">Order Summary</h2>
+        <p className="text-sm text-gray-400">Review details before issuing pass</p>
       </div>
 
-      {/* Ticket Summary Box */}
-      <div className="bg-slate-950/50 border border-slate-700 rounded-2xl p-5 sm:p-6 space-y-4 shadow-inner">
-
+      {/* Ticket Summary */}
+      <div className="bg-gray-900/50 border border-white/10 rounded-2xl p-5 space-y-3">
         {/* Ticket line items */}
-        {cart.map(t => (
-          <div key={t.id} className="flex justify-between items-center text-sm sm:text-base border-b border-slate-800 pb-4">
+        {cart.map((t: any) => (
+          <div key={t.id} className="flex justify-between items-center text-sm border-b border-white/5 pb-3 last:border-0 last:pb-0">
             <div>
-              <span className="text-slate-200 font-semibold">{t.name}</span>
-              <span className="bg-slate-800 text-cyan-400 text-xs font-bold px-2 py-1 rounded-md ml-3">x{t.quantity}</span>
+              <span className="text-white font-medium">{t.name}</span>
+              <span className="text-gray-500 text-xs ml-2">x{t.quantity}</span>
             </div>
-            <span className="text-white font-mono font-bold tracking-wider">₹{t.price * t.quantity}</span>
+            <span className="text-white font-mono">₹{t.price * t.quantity}</span>
           </div>
         ))}
 
         {/* Subtotal */}
-        <div className="flex justify-between items-center text-sm sm:text-base border-b border-slate-800 pb-4">
-          <span className="text-slate-400 font-medium">Subtotal</span>
-          <span className="text-white font-mono font-bold">₹{subtotal}</span>
+        <div className="flex justify-between items-center text-sm pt-1 border-t border-white/10">
+          <span className="text-gray-400">Subtotal</span>
+          <span className="text-white font-mono">₹{subtotal}</span>
         </div>
 
         {/* Platform Fee */}
-        <div className="flex justify-between items-center text-sm sm:text-base border-b border-slate-800 pb-4">
-          <span className="text-slate-400 font-medium">Platform Fee</span>
-          <span className="text-white font-mono font-bold">₹{PLATFORM_FEE}</span>
+        <div className="flex justify-between items-center text-sm">
+          <span className="text-gray-400">
+            Platform Fee <span className="text-xs text-gray-600">(x{totalQuantity})</span>
+          </span>
+          <span className="text-white font-mono">₹{platformFee}</span>
         </div>
 
         {/* GST on Platform Fee */}
-        <div className="flex justify-between items-center text-sm sm:text-base border-b border-slate-800 pb-4">
-          <span className="text-slate-400 font-medium">
+        <div className="flex justify-between items-center text-sm">
+          <span className="text-gray-400">
             GST on Platform Fee{" "}
-            <span className="text-xs text-slate-600">(18%)</span>
+            <span className="text-xs text-gray-600">(18%)</span>
           </span>
-          <span className="text-white font-mono font-bold">₹{GST_AMOUNT}</span>
+          <span className="text-white font-mono">₹{gstAmount}</span>
         </div>
 
         {/* Grand Total */}
-        <div className="flex justify-between items-center pt-2">
-          <span className="text-slate-400 font-medium uppercase tracking-wider text-sm">Total Payable</span>
-          <span className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400">
-            ₹{total}
-          </span>
+        <div className="flex justify-between items-center pt-3 border-t border-white/10">
+          <span className="text-gray-400">Total Payable</span>
+          <span className="text-xl font-bold text-white">₹{total}</span>
         </div>
       </div>
 
-      {/* Action Area */}
-      <div className="space-y-4 pt-2">
-        <div className="flex items-center justify-center gap-2 text-xs text-slate-500 font-medium">
-          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Secure encrypted payment via Easebuzz
-        </div>
-        <button
-          onClick={handlePayment}
-          className="w-full h-14 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 rounded-xl font-bold text-white shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2"
-        >
-          Pay ₹{total} Securely
-        </button>
-      </div>
+      {/* Confirm Button */}
+      <button
+        onClick={handlePayment}
+        className="w-full py-4 bg-blue-600 hover:bg-blue-900 rounded-xl font-bold text-white shadow-lg shadow-green-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+      >
+        <CheckCircle2 className="w-5 h-5" /> Confirm & Issue Pass
+      </button>
     </div>
   );
 };
