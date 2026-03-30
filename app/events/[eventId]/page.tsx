@@ -105,7 +105,7 @@ export default async function EventPage({
         </div>
         {/* Mobile ticket price pill */}
         <div className="lg:hidden bg-cyan-500/10 border border-cyan-500/20 rounded-full px-4 py-1.5 text-xs font-bold text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
-          ₹{minPrice}+
+          ₹{adjustedMinPrice}+
         </div>
       </nav>
 
