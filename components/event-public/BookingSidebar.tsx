@@ -46,6 +46,10 @@ export function BookingSidebar({
     ? `/events/${eventId}/sell?${checkoutParams.toString()}`
     : `/events/${eventId}/sell`;
 
+    const GST_RATE = 0.18; // 18% GST
+    const platformFee = Math.round(minPrice * 0.1);
+    const adjustedMinPrice = Math.round(minPrice + platformFee + (platformFee * GST_RATE)) - 1;
+
   return (
     <div className="relative w-full z-10 p-6 sm:p-8 font-sans">
        {/* Subtle background glow inside the card */}
@@ -60,9 +64,9 @@ export function BookingSidebar({
                  Tickets from
                </p>
                <div className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent leading-none">
-                 ₹{minPrice.toLocaleString()}
+                 ₹{adjustedMinPrice.toLocaleString()}
                </div>
-               <p className="text-xs text-slate-500 mt-2 font-medium">+ Booking Fees</p>
+               <p className="text-xs text-slate-500 mt-2 font-medium">Inclusive of all taxes and fees</p>
             </div>
             <div className="px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-bold tracking-widest uppercase text-cyan-400">
                Live Event
