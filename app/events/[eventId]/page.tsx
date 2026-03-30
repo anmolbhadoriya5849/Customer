@@ -74,6 +74,11 @@ export default async function EventPage({
     minute: "2-digit",
   });
 
+  //hatana hai
+    const GST_RATE = 0.18; // 18% GST
+    const platformFee = Math.round(minPrice * 0.1);
+    const adjustedMinPrice = Math.round(minPrice + platformFee + (platformFee * GST_RATE)) - 1;
+
   return (
     <div className="min-h-screen text-white overflow-x-hidden bg-[#0A0C10] font-sans selection:bg-cyan-500/30">
 
@@ -316,7 +321,7 @@ export default async function EventPage({
           <div className="flex-1">
             <p className="text-[9px] font-bold tracking-widest uppercase text-slate-400 mb-0.5">Starting From</p>
             <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-              ₹{minPrice}
+              ₹{adjustedMinPrice}
             </p>
           </div>
           <a href="#booking-sidebar" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 font-bold text-white text-sm hover:opacity-90 transition-opacity shadow-[0_10px_20px_rgba(6,182,212,0.2)]">
