@@ -50,7 +50,7 @@ export function BookingSidebar({
 
     const GST_RATE = 0.18; // 18% GST
     const platformFee = Math.round(minPrice * 0.05);
-    const adjustedMinPrice = Math.round(minPrice + platformFee + (platformFee * GST_RATE));
+    const adjustedMinPrice = minPrice;
 
   return (
     <div className="relative w-full z-10 p-6 sm:p-8 font-sans">
@@ -68,7 +68,7 @@ export function BookingSidebar({
                <div className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent leading-none">
                  ₹{adjustedMinPrice.toLocaleString()}
                </div>
-               <p className="text-xs text-slate-500 mt-2 font-medium">Inclusive of all taxes and fees</p>
+               <p className="text-xs text-slate-500 mt-2 font-medium">Exclusive of all taxes and fees</p>
             </div>
             <div className="px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-bold tracking-widest uppercase text-cyan-400">
                Live Event

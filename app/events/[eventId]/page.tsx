@@ -77,7 +77,7 @@ export default async function EventPage({
   //hatana hai
     const GST_RATE = 0.18; // 18% GST
     const platformFee = Math.round(minPrice * 0.1);
-    const adjustedMinPrice = Math.round(minPrice + platformFee + (platformFee * GST_RATE)) - 1;
+    const adjustedMinPrice = minPrice;
 
   return (
     <div className="min-h-screen text-white overflow-x-hidden bg-[#0A0C10] font-sans selection:bg-cyan-500/30">
