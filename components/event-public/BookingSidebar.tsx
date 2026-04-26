@@ -11,6 +11,8 @@ type BookingEvent = {
   venueName?: string | null;
 };
 
+// hi there
+
 export function BookingSidebar({
   event,
   minPrice,
@@ -47,8 +49,8 @@ export function BookingSidebar({
     : `/events/${eventId}/sell`;
 
     const GST_RATE = 0.18; // 18% GST
-    const platformFee = Math.round(minPrice * 0.1);
-    const adjustedMinPrice = Math.round(minPrice + platformFee + (platformFee * GST_RATE)) - 1;
+    const platformFee = Math.round(minPrice * 0.05);
+    const adjustedMinPrice = Math.round(minPrice + platformFee + (platformFee * GST_RATE));
 
   return (
     <div className="relative w-full z-10 p-6 sm:p-8 font-sans">

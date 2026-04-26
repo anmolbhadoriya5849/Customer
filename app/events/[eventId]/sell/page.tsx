@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const PLATFORM_FEE = 44.72;
+const PLATFORM_FEE = 0.05;
 const GST_RATE = 0.18;
 
 export default function SellPage() {
@@ -274,10 +274,10 @@ const ReviewAndPayStep = ({
   const cart = selectedTickets.filter((t: any) => t.quantity > 0);
   const totalQuantity = cart.reduce((sum: number, t: any) => sum + t.quantity, 0);
   const platformFee = PLATFORM_FEE * totalQuantity;
-  const gstAmount = Math.round(platformFee * GST_RATE);
-  const total = Math.round(subtotal + platformFee + gstAmount);
+  const gstAmount = (platformFee * GST_RATE).toFixed(2);
+  const total = (subtotal + platformFee + parseFloat(gstAmount)).toFixed(2);
 
-  return (
+    return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h2 className="text-2xl font-bold text-white">Order Summary</h2>

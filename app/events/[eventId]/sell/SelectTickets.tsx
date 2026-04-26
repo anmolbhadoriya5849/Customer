@@ -34,7 +34,7 @@ export default function SelectTickets({
   );
 
   const totalAmount = useMemo(
-    () => tickets.reduce((sum, t) => sum + t.quantity * 499, 0),
+    () => tickets.reduce((sum, t) => sum + t.quantity * t.price, 0),
     [tickets]
   );
 
@@ -111,7 +111,7 @@ export default function SelectTickets({
                   {ticket.description && (
                     <p className="text-xs text-gray-500">{ticket.description}</p>
                   )}
-                  <p className="text-sm font-mono text-gray-400 mt-1">₹{499}</p>
+                  <p className="text-sm font-mono text-gray-400 mt-1">₹{ticket.price}</p>
                 </div>
 
                 {isUnavailable ? (
