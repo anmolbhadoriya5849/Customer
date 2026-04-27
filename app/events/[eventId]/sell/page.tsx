@@ -123,7 +123,8 @@ async function handlePayment() {
 
   function calculateTotal() {
     const qty = getTotalQuantity();
-    const platformFee = PLATFORM_FEE * qty;
+    // @ts-ignore
+    const platformFee = PLATFORM_FEE * qty * selectedTickets.find(t => t.quantity > 0)?.price || 0;
     const gst = Math.round(platformFee * GST_RATE);
     return calculateSubtotal() + platformFee + gst;
   }
@@ -273,7 +274,7 @@ const ReviewAndPayStep = ({
   const subtotal = calculateSubtotal();
   const cart = selectedTickets.filter((t: any) => t.quantity > 0);
   const totalQuantity = cart.reduce((sum: number, t: any) => sum + t.quantity, 0);
-  const platformFee = PLATFORM_FEE * totalQuantity;
+  const platformFee = PLATFORM_FEE * totalQuantity * selectedTickets.find((t: any) => t.quantity > 0)?.price || 0;
   const gstAmount = (platformFee * GST_RATE).toFixed(2);
   const total = (subtotal + platformFee + parseFloat(gstAmount)).toFixed(2);
 

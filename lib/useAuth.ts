@@ -33,7 +33,7 @@ export function useAuth() {
 
   async function logout() {
     await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/customer-logout`,
       {},
       { withCredentials: true }
     );
