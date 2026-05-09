@@ -245,7 +245,7 @@ function CustomerPublicContent() {
       <footer className="w-full py-12 px-4 border-t border-white/5 bg-black/20">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-slate-500 text-xs tracking-wider uppercase font-medium">
-            © {new Date().getFullYear()} SIH Events. All rights reserved.
+            © {new Date().getFullYear()} PASSX Private Limited. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center gap-8">
             <Link href="/privacy" className="text-xs font-bold text-slate-400 hover:text-cyan-400 uppercase tracking-widest transition-colors">
